@@ -1,6 +1,6 @@
 {
   "name": "figma-icon-bot",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Automatically sync Figma icons to your repository with PR automation",
   "main": "dist/index.js",
   "bin": {

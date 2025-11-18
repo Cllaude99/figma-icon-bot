@@ -27,10 +27,6 @@ Figma의 아이콘을 자동으로 동기화하여 GitHub 저장소에 반영하
 
 ### 1. 설치
 
-#### 옵션 1: 프로젝트별 설치 (권장)
-
-프로젝트의 `package.json`에 포함되어 팀원들과 동일한 버전을 사용할 수 있습니다.
-
 ```bash
 # npm
 npm install --save-dev figma-icon-bot
@@ -42,7 +38,7 @@ yarn add --dev figma-icon-bot
 pnpm add --save-dev figma-icon-bot
 ```
 
-설치 후 실행 방법:
+설치 후 실행 방법
 
 ```bash
 # npx 사용
@@ -56,28 +52,6 @@ npx figma-icon-bot sync
 npm run icons:sync
 ```
 
-#### 옵션 2: 전역 설치
-
-여러 프로젝트에서 사용하거나 CLI로 직접 실행하고 싶은 경우:
-
-```bash
-# npm
-npm install -g figma-icon-bot
-
-# yarn
-yarn global add figma-icon-bot
-
-# pnpm
-pnpm add -g figma-icon-bot
-```
-
-설치 후 실행 방법:
-
-```bash
-figma-icon-bot init
-figma-icon-bot sync
-```
-
 **요구사항**: Node.js 18 이상, Git 설치, Figma 계정
 
 ---
@@ -86,7 +60,7 @@ figma-icon-bot sync
 
 #### 2-1. 디자이너로부터 받아야 할 정보
 
-디자이너에게 다음 정보를 요청하세요:
+디자이너에게 다음 정보를 요청하세요
 
 1. **Figma 파일 URL**
 2. **Node ID** (아이콘이 모여있는 Frame의 ID)
@@ -95,7 +69,7 @@ figma-icon-bot sync
 
 #### 2-2. Personal Access Token 발급 (개발자가 직접)
 
-**개발자 본인의 Figma 계정**에서 토큰을 발급받으세요:
+**개발자 본인의 Figma 계정**에서 토큰을 발급받으세요
 
 1. https://www.figma.com/settings 접속
 2. **Personal Access Tokens** 섹션으로 이동
@@ -105,9 +79,9 @@ figma-icon-bot sync
    - **File content** - Read only 권한 필요 (아이콘 읽기용)
 6. 생성된 토큰 복사 (한 번만 표시됩니다)
 
-> **중요**: Figma 파일을 읽기만 하고 수정하지 않기 때문에 **File content - Read only** 권한만 있으면 됩니다. 단, 개발자가 디자이너의 Figma 파일에 접근 권한(View 이상)이 있어야 합니다.
+> **중요** Figma 파일을 읽기만 하고 수정하지 않기 때문에 **File content - Read only** 권한만 있으면 됩니다. 단, 개발자가 디자이너의 Figma 파일에 접근 권한(View 이상)이 있어야 합니다.
 
-디자이너로부터 받은 Figma URL에서 File Key와 Node ID를 추출합니다:
+디자이너로부터 받은 Figma URL에서 File Key와 Node ID를 추출합니다.
 
 ```
 https://www.figma.com/design/Sz3hf6u2abGRj70UBd8RsB/MyDesign?node-id=86-3004
@@ -132,7 +106,7 @@ https://www.figma.com/design/Sz3hf6u2abGRj70UBd8RsB/MyDesign?node-id=86-3004
 
 - **하나의 Frame 안에 여러 개의 Component를 모아두세요**
 - Frame 이름 예시: `Icons`, `Icon Library`, `Design System/Icons` 등
-- 이 Frame의 Node ID를 개발자에게 전달하면 됩니다
+- 이 Frame의 Node ID를 개발자에게 전달하면 됩니다.
 
 #### 3. Component 이름 자유롭게 지정
 
@@ -157,7 +131,7 @@ https://www.figma.com/design/Sz3hf6u2abGRj70UBd8RsB/MyDesign?node-id=86-3004
    - URL에서 `node-id=86-3004` 부분이 Node ID입니다
    - 이 Node ID를 개발자에게 전달하세요
 
-> **참고**: Personal Access Token은 개발자가 본인 계정에서 직접 발급합니다 (위 2-2 참조). 디자이너는 Figma 파일 URL과 Node ID만 제공하면 됩니다.
+> **참고** Personal Access Token은 개발자가 본인 계정에서 직접 발급합니다 (위 2-2 참조). 디자이너는 Figma 파일 URL과 Node ID만 제공하면 됩니다.
 
 ### 📐 Figma 구조 예시
 
@@ -193,13 +167,13 @@ https://www.figma.com/design/Sz3hf6u2abGRj70UBd8RsB/MyDesign?node-id=86-3004
 
 ### 🔄 디자이너 워크플로우
 
-1. **초기 설정** (1회만):
+1. **초기 설정** (1회만)
 
    - Frame 생성: "Icons"
    - Figma 파일 URL과 Frame의 Node ID를 개발자에게 전달
    - 개발자가 Figma 파일에 접근 권한(View 이상)이 있는지 확인
 
-2. **일상적인 작업**:
+2. **일상적인 작업**
 
    - "Icons" Frame 안에 새 아이콘 디자인
    - Component로 변환 (`Ctrl/Cmd + Alt + K`)
@@ -207,7 +181,7 @@ https://www.figma.com/design/Sz3hf6u2abGRj70UBd8RsB/MyDesign?node-id=86-3004
    - 저장
    - 끝! (나머지는 자동화됨)
 
-3. **자동 동기화**:
+3. **자동 동기화** (선택사항)
    - 개발자가 설정한 시간(예: 매일 오전 10시)에 자동으로 GitHub에 PR 생성
    - 또는 개발자가 수동으로 실행
 
@@ -223,7 +197,7 @@ https://www.figma.com/design/Sz3hf6u2abGRj70UBd8RsB/MyDesign?node-id=86-3004
 export FIGMA_ACCESS_TOKEN="figd_xxxxxxxxxxxxx"
 ```
 
-또는 `.env` 파일 생성:
+또는 `.env` 파일 생성
 
 ```bash
 echo "FIGMA_ACCESS_TOKEN=figd_xxxxxxxxxxxxx" > .env
@@ -268,7 +242,7 @@ figma-icon-bot init
 }
 ```
 
-**주요 설정 옵션**:
+**주요 설정 옵션**
 
 - `figma.fileKey`: Figma 파일 키 (필수)
 - `figma.nodeId`: 아이콘이 있는 특정 Frame의 Node ID (선택, 권장)
@@ -282,7 +256,7 @@ figma-icon-bot init
 - `git.enabled`: Git 자동화 활성화 여부
 - `git.createPR`: PR 자동 생성 여부
 
-**naming.transform 옵션**:
+**naming.transform 옵션**
 
 | 옵션           | 설명                               | 예시 (Figma: "Home Icon") |
 | -------------- | ---------------------------------- | ------------------------- |
@@ -301,7 +275,7 @@ figma-icon-bot init
 figma-icon-bot validate
 ```
 
-성공 시:
+성공 시
 
 ```
 ✓ Configuration valid
@@ -325,7 +299,7 @@ figma-icon-bot sync --no-git
 figma-icon-bot sync
 ```
 
-이 명령은 다음을 수행합니다:
+이 명령은 다음을 수행합니다.
 
 1. Figma API로 아이콘 다운로드
 2. SVG 최적화
@@ -425,72 +399,7 @@ figma-icon-bot validate
 
 ---
 
-### 8. 프로그래밍 방식으로 사용
-
-#### 기본 사용
-
-```typescript
-import { syncIcons, loadConfig } from 'figma-icon-bot';
-
-async function sync() {
-  const config = await loadConfig();
-  const result = await syncIcons(config);
-
-  console.log(`Added: ${result.added.length}`);
-  console.log(`Updated: ${result.updated.length}`);
-  console.log(`Deleted: ${result.deleted.length}`);
-}
-
-sync();
-```
-
-#### 커스텀 설정
-
-```typescript
-import { syncIcons } from 'figma-icon-bot';
-
-const customConfig = {
-  figma: {
-    fileKey: 'YOUR_FILE_KEY',
-    nodeId: '86-3004', // Optional: target specific frame
-    accessToken: process.env.FIGMA_ACCESS_TOKEN!,
-  },
-  output: {
-    directory: './custom-icons',
-    formats: ['svg' as const, 'react' as const],
-    react: {
-      typescript: true,
-      exportType: 'named' as const,
-      componentPrefix: 'Icon',
-    },
-  },
-  naming: {
-    transform: 'camelCase' as const, // 'preserve' | 'kebab-case' | 'camelCase' | 'PascalCase'
-    sanitize: true,
-  },
-  git: {
-    enabled: false,
-    createPR: false,
-  },
-};
-
-const result = await syncIcons(customConfig);
-```
-
-#### 빌드 프로세스에 통합
-
-```json
-{
-  "scripts": {
-    "prebuild": "figma-icon-bot sync --no-git",
-    "build": "vite build"
-  }
-}
-```
-
----
-
-### 9. 출력 결과
+### 8. 출력 결과
 
 #### 예시 1: SVG 출력 (kebab-case)
 
@@ -591,15 +500,17 @@ import { IconHomeIcon } from './icons/IconHomeIcon';
 
 ---
 
-### 10. 문제 해결
+### 9. 관련 이슈
 
 #### "FIGMA_ACCESS_TOKEN is required"
 
-환경 변수를 설정하세요:
+환경 변수를 설정하세요.
 
 ```bash
 export FIGMA_ACCESS_TOKEN="figd_xxxxx"
 ```
+
+또는 Github Secrets 설정
 
 #### "No icons found in Figma"
 
@@ -609,11 +520,11 @@ export FIGMA_ACCESS_TOKEN="figd_xxxxx"
 
 #### "Failed to create PR"
 
-GitHub Token이 필요합니다:
+GitHub Token이 필요합니다.
 
 1. https://github.com/settings/tokens 에서 토큰 생성
 2. `repo`, `workflow` 권한 선택
-3. 환경 변수로 설정:
+3. 환경 변수로 설정
 
 ```bash
 export GITHUB_TOKEN="ghp_xxxxx"
