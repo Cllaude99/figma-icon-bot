@@ -1,15 +1,21 @@
 {
   "name": "figma-icon-bot",
   "version": "0.1.1",
-  "description": "Automatically sync Figma icons to your repository with PR automation",
+  "description": "Figma에서 변경된 아이콘을 자동으로 가져와 레포지토리에 반영하고 PR까지 생성해주는 아이콘 동기화 도구입니다.",
   "main": "dist/index.js",
   "bin": {
     "figma-icon-bot": "dist/cli.js"
   },
   "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
+    "prepublishOnly": "npm run build",
     "sync": "node dist/cli.js sync",
     "init": "node dist/cli.js init",
     "test": "echo \"Error: no test specified\" && exit 1"
