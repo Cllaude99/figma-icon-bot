@@ -1,0 +1,12 @@
+src/
+.github/
+.vscode/
+*.tsbuildinfo
+tsconfig.json
+.env
+.env.local
+.DS_Store
+*.log
+*.md
+!README.md
+!LICENSE

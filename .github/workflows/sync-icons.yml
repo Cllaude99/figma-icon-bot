@@ -1,0 +1,60 @@
+name: Sync Figma Icons
+
+on:
+  # 매일 오전 10시(UTC)에 자동 실행 - 한국시간 오후 7시
+  # 스케줄을 변경하려면 cron 표현식 수정: '분 시 일 월 요일'
+  schedule:
+    - cron: '0 10 * * *'
+
+  # GitHub Actions 탭에서 수동 실행 가능
+  workflow_dispatch:
+
+  # 테스트를 위해 main 브랜치 push 시 실행하려면 아래 주석 해제
+  # push:
+  #   branches:
+  #     - main
+
+jobs:
+  sync-icons:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # NPM 패키지로 설치 (배포 후)
+      - name: Install figma-icon-bot
+        run: npm install -g figma-icon-bot
+
+      # Figma에서 아이콘 동기화 실행
+      # FIGMA_ACCESS_TOKEN: Repository Secrets에 등록 필요
+      # GITHUB_TOKEN: 자동으로 제공됨 (PR 생성용)
+      - name: Sync icons from Figma
+        env:
+          FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: figma-icon-bot sync
+
+      # 실패 시 GitHub Issue 자동 생성 (필요시 주석 해제)
+      # 동기화 실패 시 자동으로 Issue를 생성하여 팀에 알림
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🚨 Figma Icon Sync Failed',
+              body: `The automated Figma icon sync job failed.
+
+              **Workflow Run:** ${context.payload.repository.html_url}/actions/runs/${context.runId}
+
+              Please check the workflow logs for details.`,
+              labels: ['automated', 'figma-sync', 'bug']
+            })

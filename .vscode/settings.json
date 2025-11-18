@@ -1,0 +1,23 @@
+{
+  // TypeScript 설정
+  "typescript.tsdk": "node_modules/typescript/lib",
+
+  // ESLint 설정 (선택)
+  "eslint.validate": [
+    "javascript",
+    "typescript"
+  ],
+
+  // 파일 제외
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/.git": true,
+    "**/dist": false
+  },
+
+  // 검색 제외
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true
+  }
+}
