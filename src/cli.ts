@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+// Load environment variables from .env file
+import 'dotenv/config';
+
 import { Command } from 'commander';
 import chalk from 'chalk';
 import ora from 'ora';
@@ -31,7 +34,8 @@ program
       {
         type: 'text',
         name: 'nodeId',
-        message: 'Enter the frame/page node ID (optional, press Enter to skip):',
+        message:
+          'Enter the frame/page node ID (optional, press Enter to skip):',
       },
       {
         type: 'text',
@@ -52,10 +56,14 @@ program
 
     await createConfigFile();
     console.log(chalk.green('\n✓ Configuration file created!'));
-    console.log(chalk.gray('  Edit .figma-icon-bot.config.json to customize settings'));
+    console.log(
+      chalk.gray('  Edit .figma-icon-bot.config.json to customize settings')
+    );
     console.log(chalk.gray('  Set FIGMA_ACCESS_TOKEN environment variable'));
     console.log(chalk.gray('\nNext steps:'));
-    console.log(chalk.gray('  1. Update the config file with your Figma details'));
+    console.log(
+      chalk.gray('  1. Update the config file with your Figma details')
+    );
     console.log(chalk.gray('  2. Set FIGMA_ACCESS_TOKEN in your environment'));
     console.log(chalk.gray('  3. Run: figma-icon-bot sync'));
   });
@@ -88,7 +96,10 @@ program
       console.log(chalk.green('\n✨ Sync completed successfully!'));
     } catch (error) {
       spinner.fail('Sync failed');
-      console.error(chalk.red('\n❌ Error:'), error instanceof Error ? error.message : error);
+      console.error(
+        chalk.red('\n❌ Error:'),
+        error instanceof Error ? error.message : error
+      );
       process.exit(1);
     }
   });
@@ -104,10 +115,15 @@ program
       spinner.succeed('Configuration valid');
 
       spinner.start('Testing Figma connection...');
-      const figmaClient = new FigmaClient(config.figma.accessToken!, config.figma.fileKey);
+      const figmaClient = new FigmaClient(
+        config.figma.accessToken!,
+        config.figma.fileKey
+      );
 
       const file = await figmaClient.getFile();
-      spinner.succeed(`Connected to Figma file: ${file.document.name || 'Untitled'}`);
+      spinner.succeed(
+        `Connected to Figma file: ${file.document.name || 'Untitled'}`
+      );
 
       spinner.start('Searching for icons...');
       const icons = await figmaClient.findIconNodes(config.figma.nodeId);
@@ -126,7 +142,10 @@ program
       console.log(chalk.green('\n✓ Everything looks good!'));
     } catch (error) {
       spinner.fail('Validation failed');
-      console.error(chalk.red('\n❌ Error:'), error instanceof Error ? error.message : error);
+      console.error(
+        chalk.red('\n❌ Error:'),
+        error instanceof Error ? error.message : error
+      );
       process.exit(1);
     }
   });
