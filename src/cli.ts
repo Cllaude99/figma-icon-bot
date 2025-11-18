@@ -16,7 +16,7 @@ const program = new Command();
 program
   .name('figma-icon-bot')
   .description('Automatically sync Figma icons to your repository')
-  .version('0.1.0');
+  .version('0.1.4');
 
 program
   .command('init')
