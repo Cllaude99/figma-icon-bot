@@ -6,7 +6,7 @@ Figma의 아이콘을 자동으로 동기화하여 GitHub 저장소에 반영하
 
 **Figma Icon Bot**은 개발자가 디자이너의 Figma 아이콘 작업을 자동으로 동기화하기 위한 NPM 패키지입니다. 디자이너가 Figma에서 아이콘을 수정하거나 추가하면, 개발자가 설정한 자동화를 통해 GitHub에 Pull Request가 생성됩니다.
 
-**주요 사용자**: 개발자 (디자이너의 Figma 파일에 접근하여 아이콘을 자동으로 가져와야 하는 프론트엔드 개발자)
+**주요 사용자**: 디자이너의 Figma 파일에 접근하여 아이콘을 자동으로 가져와야 하는 개발자
 
 ### 해결하는 문제
 
@@ -29,16 +29,55 @@ Figma의 아이콘을 자동으로 동기화하여 GitHub 저장소에 반영하
 
 ### 1. 설치
 
-#### 전역 설치 (권장)
+#### 옵션 1: 프로젝트별 설치 (권장)
+
+프로젝트의 `package.json`에 포함되어 팀원들과 동일한 버전을 사용할 수 있습니다.
 
 ```bash
-npm install -g figma-icon-bot
+# npm
+npm install --save-dev figma-icon-bot
+
+# yarn
+yarn add --dev figma-icon-bot
+
+# pnpm
+pnpm add --save-dev figma-icon-bot
 ```
 
-#### 프로젝트별 설치
+설치 후 실행 방법:
 
 ```bash
-npm install --save-dev figma-icon-bot
+# npx 사용
+npx figma-icon-bot init
+npx figma-icon-bot sync
+
+# 또는 package.json scripts에 추가
+# "scripts": {
+#   "icons:sync": "figma-icon-bot sync"
+# }
+npm run icons:sync
+```
+
+#### 옵션 2: 전역 설치
+
+여러 프로젝트에서 사용하거나 CLI로 직접 실행하고 싶은 경우:
+
+```bash
+# npm
+npm install -g figma-icon-bot
+
+# yarn
+yarn global add figma-icon-bot
+
+# pnpm
+pnpm add -g figma-icon-bot
+```
+
+설치 후 실행 방법:
+
+```bash
+figma-icon-bot init
+figma-icon-bot sync
 ```
 
 **요구사항**: Node.js 18 이상, Git 설치, Figma 계정
@@ -47,7 +86,18 @@ npm install --save-dev figma-icon-bot
 
 ### 2. Figma 준비
 
-#### 2-1. Personal Access Token 발급
+#### 2-1. 디자이너로부터 받아야 할 정보
+
+디자이너에게 다음 정보를 요청하세요:
+
+1. **Figma 파일 URL**
+2. **Node ID** (아이콘이 모여있는 Frame의 ID)
+
+> 디자이너가 아이콘을 제공하는 방법은 아래 2-3에 자세히 설명되어 있습니다.
+
+#### 2-2. Personal Access Token 발급 (개발자가 직접)
+
+**개발자 본인의 Figma 계정**에서 토큰을 발급받으세요:
 
 1. https://www.figma.com/settings 접속
 2. **Personal Access Tokens** 섹션으로 이동
@@ -57,11 +107,9 @@ npm install --save-dev figma-icon-bot
    - **File content** - Read only 권한 필요 (아이콘 읽기용)
 6. 생성된 토큰 복사 (한 번만 표시됩니다)
 
-> **중요**: Figma Personal Access Token은 **File content - Read only** 권한만 있으면 됩니다. 이 모듈은 Figma 파일을 읽기만 하고 수정하지 않습니다.
+> **중요**: Figma 파일을 읽기만 하고 수정하지 않기 때문에 **File content - Read only** 권한만 있으면 됩니다. 단, 개발자가 디자이너의 Figma 파일에 접근 권한(View 이상)이 있어야 합니다.
 
-#### 2-2. Figma 파일 정보 확인
-
-Figma URL에서 File Key와 Node ID 추출:
+디자이너로부터 받은 Figma URL에서 File Key와 Node ID를 추출합니다:
 
 ```
 https://www.figma.com/design/Sz3hf6u2abGRj70UBd8RsB/MyDesign?node-id=86-3004
@@ -72,28 +120,24 @@ https://www.figma.com/design/Sz3hf6u2abGRj70UBd8RsB/MyDesign?node-id=86-3004
 - **File Key**: 필수 - Figma 파일 고유 식별자
 - **Node ID**: 선택 - 특정 Frame/섹션만 동기화하려는 경우
 
-> **범용성**: 디자인 파일 전체가 아닌 **아이콘이 모여있는 특정 Frame의 Node ID**를 지정하면 해당 영역의 Component만 추출합니다. 이렇게 하면 디자인 파일에 다른 요소들이 있어도 아이콘만 정확히 가져올 수 있습니다.
+> 디자인 파일 전체가 아닌 **아이콘이 모여있는 특정 Frame의 Node ID**를 지정하면 해당 영역의 Component만 추출합니다.
 
-#### 2-3. 디자이너가 Figma에서 아이콘 제공하는 방법
+#### 2-4. 디자이너가 Figma에서 아이콘 제공하는 방법
 
-**디자이너가 지켜야 하는 규칙**:
+**디자이너가 지켜야 하는 규칙**
 
 ### ✅ 필수 규칙
 
 #### 1. 아이콘은 반드시 **Component**로 만들기
-- **Component** 🔷 (보라색 다이아몬드)만 인식됩니다
-- Frame 🔲, Group 📁은 인식되지 않습니다
-- Component 만드는 방법:
-  1. Figma에서 아이콘 선택
-  2. `Ctrl/Cmd + Alt + K` 또는 우클릭 → "Create Component"
-  3. 레이어 패널에서 보라색 다이아몬드 🔷 아이콘 확인
 
 #### 2. 하나의 Frame에 모든 아이콘 모아두기 (권장)
+
 - **하나의 Frame 안에 여러 개의 Component를 모아두세요**
 - Frame 이름 예시: `Icons`, `Icon Library`, `Design System/Icons` 등
 - 이 Frame의 Node ID를 개발자에게 전달하면 됩니다
 
 #### 3. Component 이름 자유롭게 지정
+
 - 디자이너가 원하는 대로 이름을 지정하세요
 - 예시: `Home`, `Home Icon`, `icon-home`, `IconHome` 모두 가능
 - 개발자가 설정으로 원하는 형식으로 변환할 수 있습니다
@@ -102,16 +146,20 @@ https://www.figma.com/design/Sz3hf6u2abGRj70UBd8RsB/MyDesign?node-id=86-3004
 
 개발자에게 다음 정보를 전달하세요:
 
-1. **Figma 파일 URL**
+1. **Figma 파일 URL** (또는 File Key + Node ID)
+
    ```
    https://www.figma.com/design/Sz3hf6u2abGRj70UBd8RsB/MyDesign?node-id=86-3004
    ```
 
-2. **Node ID** (아이콘이 모여있는 Frame의 ID)
-   - Figma에서 Frame 선택 → 우클릭 → "Copy/Paste as" → "Copy link"
-   - URL에서 `node-id=86-3004` 부분이 Node ID입니다
+2. **Node ID 추출 방법**
 
-3. **Personal Access Token** (위 2-1 참조)
+   - Figma에서 아이콘이 모여있는 Frame 선택
+   - 우클릭 → "Copy/Paste as" → "Copy link"
+   - URL에서 `node-id=86-3004` 부분이 Node ID입니다
+   - 이 Node ID를 개발자에게 전달하세요
+
+> **참고**: Personal Access Token은 개발자가 본인 계정에서 직접 발급합니다 (위 2-2 참조). 디자이너는 Figma 파일 URL과 Node ID만 제공하면 됩니다.
 
 ### 📐 Figma 구조 예시
 
@@ -148,11 +196,13 @@ https://www.figma.com/design/Sz3hf6u2abGRj70UBd8RsB/MyDesign?node-id=86-3004
 ### 🔄 디자이너 워크플로우
 
 1. **초기 설정** (1회만):
+
    - Frame 생성: "Icons"
-   - Frame의 Node ID를 개발자에게 전달
-   - Personal Access Token 발급하여 개발자에게 전달
+   - Figma 파일 URL과 Frame의 Node ID를 개발자에게 전달
+   - 개발자가 Figma 파일에 접근 권한(View 이상)이 있는지 확인
 
 2. **일상적인 작업**:
+
    - "Icons" Frame 안에 새 아이콘 디자인
    - Component로 변환 (`Ctrl/Cmd + Alt + K`)
    - Component 이름 지정
@@ -236,12 +286,12 @@ figma-icon-bot init
 
 **naming.transform 옵션**:
 
-| 옵션 | 설명 | 예시 (Figma: "Home Icon") |
-|------|------|------------------------|
-| `"preserve"` | 디자이너가 설정한 이름 그대로 유지 | `Home Icon.svg` |
-| `"kebab-case"` | 소문자 + 하이픈 | `home-icon.svg` |
-| `"camelCase"` | 카멜 케이스 | `homeIcon.svg` |
-| `"PascalCase"` | 파스칼 케이스 | `HomeIcon.svg` |
+| 옵션           | 설명                               | 예시 (Figma: "Home Icon") |
+| -------------- | ---------------------------------- | ------------------------- |
+| `"preserve"`   | 디자이너가 설정한 이름 그대로 유지 | `Home Icon.svg`           |
+| `"kebab-case"` | 소문자 + 하이픈                    | `home-icon.svg`           |
+| `"camelCase"`  | 카멜 케이스                        | `homeIcon.svg`            |
+| `"PascalCase"` | 파스칼 케이스                      | `HomeIcon.svg`            |
 
 > **권장**: `"preserve"`를 사용하여 디자이너의 의도를 존중하거나, `"kebab-case"`를 사용하여 일관된 파일명 규칙을 적용하세요.
 
@@ -278,6 +328,7 @@ figma-icon-bot sync
 ```
 
 이 명령은 다음을 수행합니다:
+
 1. Figma API로 아이콘 다운로드
 2. SVG 최적화
 3. React 컴포넌트 생성 (설정된 경우)
@@ -308,8 +359,8 @@ name: Sync Figma Icons
 
 on:
   schedule:
-    - cron: '0 10 * * *'  # 매일 오전 10시(UTC) 실행
-  workflow_dispatch:      # 수동 실행 가능
+    - cron: '0 10 * * *' # 매일 오전 10시(UTC) 실행
+  workflow_dispatch: # 수동 실행 가능
 
 jobs:
   sync-icons:
@@ -520,7 +571,7 @@ export function IconHomeIcon(props: React.SVGProps<SVGSVGElement>) {
 ```tsx
 import { IconHomeIcon } from './icons/IconHomeIcon';
 
-<IconHomeIcon className="w-6 h-6 text-blue-500" />
+<IconHomeIcon className="w-6 h-6 text-blue-500" />;
 ```
 
 #### 예시 3: 디자이너 이름 그대로 유지
